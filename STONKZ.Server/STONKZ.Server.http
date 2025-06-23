@@ -1,0 +1,6 @@
+@STONKZ.Server_HostAddress = http://localhost:5264
+
+GET {{STONKZ.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
