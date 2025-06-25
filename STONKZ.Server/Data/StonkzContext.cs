@@ -5,8 +5,8 @@ namespace STONKZ.Server.Data
 {
     public class StonkzContext : DbContext
     {
-        public DbSet<Stonk>         Stonkz      { get; set; }
-        public DbSet<StonkData>     StonkDataz  { get; set; }
+        public DbSet<Stonk> Stonkz { get; set; } = null!;
+        public DbSet<StonkData> StonkDataz { get; set; } = null!;
 
 
         public StonkzContext() { }
