@@ -13,5 +13,7 @@ namespace STONKZ.Server.Models
         public decimal  Low                 { get; set; }
         public long     Volume              { get; set; }
         public double   ChangePercentage    { get; set; }
+        public int      StonkId             { get; set; }
+        public Stonk    Stonk               { get; set; }
     }
 }

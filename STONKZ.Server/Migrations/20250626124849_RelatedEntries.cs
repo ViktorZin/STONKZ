@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace STONKZ.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class RelatedEntries : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -25,7 +25,7 @@ namespace STONKZ.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "StonkDataz",
+                name: "StonkData",
                 columns: table => new
                 {
                     StonkDataId = table.Column<int>(type: "int", nullable: false)
@@ -37,21 +37,22 @@ namespace STONKZ.Server.Migrations
                     Low = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Volume = table.Column<long>(type: "bigint", nullable: false),
                     ChangePercentage = table.Column<double>(type: "float", nullable: false),
-                    StonkId = table.Column<int>(type: "int", nullable: true)
+                    StonkId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StonkDataz", x => x.StonkDataId);
+                    table.PrimaryKey("PK_StonkData", x => x.StonkDataId);
                     table.ForeignKey(
-                        name: "FK_StonkDataz_Stonkz_StonkId",
+                        name: "FK_StonkData_Stonkz_StonkId",
                         column: x => x.StonkId,
                         principalTable: "Stonkz",
-                        principalColumn: "StonkId");
+                        principalColumn: "StonkId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_StonkDataz_StonkId",
-                table: "StonkDataz",
+                name: "IX_StonkData_StonkId",
+                table: "StonkData",
                 column: "StonkId");
         }
 
@@ -59,7 +60,7 @@ namespace STONKZ.Server.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "StonkDataz");
+                name: "StonkData");
 
             migrationBuilder.DropTable(
                 name: "Stonkz");
