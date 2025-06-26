@@ -65,7 +65,7 @@ namespace STONKZ.Server.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("StonkId")
+                    b.Property<int>("StonkId")
                         .HasColumnType("int");
 
                     b.Property<long>("Volume")
@@ -75,14 +75,18 @@ namespace STONKZ.Server.Migrations
 
                     b.HasIndex("StonkId");
 
-                    b.ToTable("StonkDataz");
+                    b.ToTable("StonkData");
                 });
 
             modelBuilder.Entity("STONKZ.Server.Models.StonkData", b =>
                 {
-                    b.HasOne("STONKZ.Server.Models.Stonk", null)
+                    b.HasOne("STONKZ.Server.Models.Stonk", "Stonk")
                         .WithMany("StonkHistory")
-                        .HasForeignKey("StonkId");
+                        .HasForeignKey("StonkId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Stonk");
                 });
 
             modelBuilder.Entity("STONKZ.Server.Models.Stonk", b =>
