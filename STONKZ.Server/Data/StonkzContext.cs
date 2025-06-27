@@ -13,8 +13,10 @@ namespace STONKZ.Server.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=StonkzAppData;");
+            optionsBuilder.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=StonkzAppData;", 
+                options => options.EnableRetryOnFailure());
             //optionsBuilder.EnableSensitiveDataLogging(true);
+            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
