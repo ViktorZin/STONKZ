@@ -6,4 +6,5 @@ export interface StonkzData {
   low: number;
   volume: number;
   changePercentage: number;
+  stonkId: number;
 }

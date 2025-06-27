@@ -8,6 +8,22 @@
 <table *ngIf="stonkz">
   <thead>
     <tr>
+      <th>Stonk ID</th>
+      <th>Stonk name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let stonk of stonkz">
+      <td>{{stonk.stonkId}}</td>
+      <td>{{stonk.stonkName}}</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<table *ngIf="stonkData">
+  <thead>
+    <tr>
       <th>Date</th>
       <th>Price</th>
       <th>Open</th>
@@ -15,10 +31,11 @@
       <th>Low</th>
       <th>Volume</th>
       <th>ChangePercentage</th>
+      <th>StockId</th>
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let stonk of stonkz">
+    <tr *ngFor="let stonk of stonkData">
       <td>{{stonk.date}}</td>
       <td>{{stonk.price}} €</td>
       <td>{{stonk.open}} €</td>
@@ -26,9 +43,12 @@
       <td>{{stonk.low}} €</td>
       <td>{{stonk.volume}} </td>
       <td>{{stonk.changePercentage}} %</td>
+      <td>{{stonk.stonkId}}</td>
     </tr>
   </tbody>
 </table>
+
+
 
 <!--
 <table *ngIf="forecasts">
