@@ -1,9 +1,36 @@
-﻿<h1 id="tableLabel">Weather forecast</h1>
+<h1 id="tableLabel">Weather forecast</h1>
 
 <p>This component demonstrates fetching data from the server.</p>
 
 <p *ngIf="!forecasts"><em>Loading... Please refresh once the ASP.NET backend has started. See <a href="https://aka.ms/jspsintegrationangular">https://aka.ms/jspsintegrationangular</a> for more details.</em></p>
 
+
+<table *ngIf="stonkz">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Price</th>
+      <th>Open</th>
+      <th>High</th>
+      <th>Low</th>
+      <th>Volume</th>
+      <th>ChangePercentage</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let stonk of stonkz">
+      <td>{{stonk.date}}</td>
+      <td>{{stonk.price}} €</td>
+      <td>{{stonk.open}} €</td>
+      <td>{{stonk.high}} €</td>
+      <td>{{stonk.low}} €</td>
+      <td>{{stonk.volume}} </td>
+      <td>{{stonk.changePercentage}} %</td>
+    </tr>
+  </tbody>
+</table>
+
+<!--
 <table *ngIf="forecasts">
     <thead>
         <tr>
@@ -22,3 +49,4 @@
         </tr>
     </tbody>
 </table>
+  -->

@@ -3,4 +3,6 @@
 GET {{STONKZ.Server_HostAddress}}/weatherforecast/
 Accept: application/json
 
+GET {{STONKZ.Server_HostAddress}}/stonkdata/
+Accept: application/json
 ###
