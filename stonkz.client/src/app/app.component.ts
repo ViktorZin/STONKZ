@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { StonkzData } from './Interfaces/stonkz-data';
+import { Stonk } from './Interfaces/stonk';
 
 interface WeatherForecast {
   date: string;
@@ -18,12 +19,14 @@ interface WeatherForecast {
 export class AppComponent implements OnInit {
   public forecasts: WeatherForecast[] = [];
 
-  public stonkz: StonkzData[] = [];
+  public stonkData: StonkzData[] = [];
+  public stonkz: Stonk[] = [];
 
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
     this.getForecasts();
+    this.getStonkData();
     this.getStonkz();
   }
 
@@ -38,8 +41,19 @@ export class AppComponent implements OnInit {
     );
   }
 
-  getStonkz() {
+  getStonkData() {
     this.http.get<StonkzData[]>('/stonkdata').subscribe(
+      (result) => {
+        this.stonkData = result;
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+  }
+
+  getStonkz() {
+    this.http.get<Stonk[]>('/stonk').subscribe(
       (result) => {
         this.stonkz = result;
       },
