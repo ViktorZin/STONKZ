@@ -87,6 +87,9 @@ export class AppComponent implements OnInit {
 
   stonkUpdate = effect(() => {
     console.log(`The stonkData should update now. new ID: ${this.selectedStonk()}`);
+
+    this.stonkData = [];
+    this.getStonkData();
   });
 
   title = 'stonkz.client';
