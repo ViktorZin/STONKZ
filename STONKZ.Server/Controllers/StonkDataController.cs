@@ -31,9 +31,26 @@ namespace STONKZ.Server.Controllers
             {
                 return new List<StonkData>();
 
-            }
+            }   
+        }
 
-                
+        [HttpGet("{id}", Name ="GetStonkDataById")]
+        public IEnumerable<StonkData> Get(int id)
+        {
+            StonkzContext context = new StonkzContext();
+
+            var StonkDataList = context.StonkData.Where(d => d.StonkId == id);
+
+            if (StonkDataList.Any())
+            {
+                Console.WriteLine("I am getting StonkData BY ID " + id);
+                return StonkDataList.ToArray();
+            }
+            else
+            {
+                return new List<StonkData>();
+
+            }
         }
     }
 }
