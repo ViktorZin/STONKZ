@@ -4,7 +4,16 @@
 
 <p *ngIf="!forecasts"><em>Loading... Please refresh once the ASP.NET backend has started. See <a href="https://aka.ms/jspsintegrationangular">https://aka.ms/jspsintegrationangular</a> for more details.</em></p>
 
+<label for="Stonkz">Choose a Stonk: </label>
+<select name="Stonkz" id="Stonkz" (change)="updateSelectedStonk($event)">
+  @for(stonk of stonkz; track stonk.stonkId) {
+    <option value="{{stonk.stonkId}}">{{stonk.stonkName}}</option>
+  }
 
+</select>
+
+<h1>SELECTED STONK ID: {{selectedStonk()}}</h1>
+<!--
 <table *ngIf="stonkz">
   <thead>
     <tr>
@@ -19,7 +28,7 @@
     </tr>
   </tbody>
 </table>
-
+-->
 
 <table *ngIf="stonkData">
   <thead>

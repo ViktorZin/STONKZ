@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, WritableSignal, signal, effect } from '@angular/core';
 import { StonkzData } from './Interfaces/stonkz-data';
 import { Stonk } from './Interfaces/stonk';
 
@@ -18,6 +18,9 @@ interface WeatherForecast {
 })
 export class AppComponent implements OnInit {
   public forecasts: WeatherForecast[] = [];
+
+  selectedStonk: WritableSignal<number> = signal(1);
+
 
   public stonkData: StonkzData[] = [];
   public stonkz: Stonk[] = [];
@@ -42,7 +45,7 @@ export class AppComponent implements OnInit {
   }
 
   getStonkData() {
-    this.http.get<StonkzData[]>('/stonkdata').subscribe(
+    this.http.get<StonkzData[]>('/stonkdata/' + this.selectedStonk()).subscribe(
       (result) => {
         this.stonkData = result;
       },
@@ -62,6 +65,29 @@ export class AppComponent implements OnInit {
       }
     );
   }
+
+  updateSelectedStonk(event: Event) {
+    let input: number = Number((event.target as HTMLInputElement).value);
+    this.selectedStonk.set(input);
+
+    /*
+    console.log("Input is this: " + input);
+    if (typeof input === "string") {
+      console.log("Input is a string");
+    } else if (typeof input === "number") {
+      console.log("Input is a number");
+    }
+    else {
+      console.log("Input is... something...");
+    }
+    */
+    
+  }
+
+
+  stonkUpdate = effect(() => {
+    console.log(`The stonkData should update now. new ID: ${this.selectedStonk()}`);
+  });
 
   title = 'stonkz.client';
 }
