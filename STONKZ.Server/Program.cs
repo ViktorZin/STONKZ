@@ -8,8 +8,9 @@ namespace STONKZ.Server
     {
         public static void Main(string[] args)
         {
-            
+
             //ReadStonkDataFromDatabase();
+         
 
             var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,11 @@ namespace STONKZ.Server
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
+
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
 
             //ReadStonkDataFromCSV();
 

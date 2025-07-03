@@ -1,34 +1,32 @@
-<h1 id="tableLabel">Weather forecast</h1>
+<h1>APP-COMPONENT MAIN</h1>
+
+<app-historical-data-view></app-historical-data-view>
+<!--
+
+
+
 
 <p>This component demonstrates fetching data from the server.</p>
 
-<p *ngIf="!forecasts"><em>Loading... Please refresh once the ASP.NET backend has started. See <a href="https://aka.ms/jspsintegrationangular">https://aka.ms/jspsintegrationangular</a> for more details.</em></p>
 
 <label for="Stonkz">Choose a Stonk: </label>
 <select name="Stonkz" id="Stonkz" (change)="updateSelectedStonk($event)">
   @for(stonk of stonkz; track stonk.stonkId) {
-    <option value="{{stonk.stonkId}}">{{stonk.stonkName}}</option>
+  <option value="{{stonk.stonkId}}">{{stonk.stonkName}}</option>
   }
 
 </select>
 
-<h1>SELECTED STONK ID: {{selectedStonk()}}</h1>
-<!--
-<table *ngIf="stonkz">
-  <thead>
-    <tr>
-      <th>Stonk ID</th>
-      <th>Stonk name</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let stonk of stonkz">
-      <td>{{stonk.stonkId}}</td>
-      <td>{{stonk.stonkName}}</td>
-    </tr>
-  </tbody>
-</table>
--->
+
+<input type="date"  (input)="changeDate($event)" />
+
+
+<h1>SELECTED STONK: {{getStonkByID(selectedStonk()).stonkName}}</h1>
+<h3>SELECTED DATE: {{gameDay() | date:'shortDate'}}</h3>
+
+
+<h6>GameDay Signal Value:  {{gameDay()}}</h6>
+
 
 <table *ngIf="stonkData">
   <thead>
@@ -45,7 +43,7 @@
   </thead>
   <tbody>
     <tr *ngFor="let stonk of stonkData">
-      <td>{{stonk.date}}</td>
+      <td>{{stonk.date | date:'shortDate'}}</td>
       <td>{{stonk.price}} €</td>
       <td>{{stonk.open}} €</td>
       <td>{{stonk.high}} €</td>
@@ -55,27 +53,5 @@
       <td>{{stonk.stonkId}}</td>
     </tr>
   </tbody>
-</table>
-
-
-
-<!--
-<table *ngIf="forecasts">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Temp. (C)</th>
-            <th>Temp. (F)</th>
-            <th>Summary</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let forecast of forecasts">
-            <td>{{ forecast.date }}</td>
-            <td>{{ forecast.temperatureC }}</td>
-            <td>{{ forecast.temperatureF }}</td>
-            <td>{{ forecast.summary }}</td>
-        </tr>
-    </tbody>
 </table>
   -->

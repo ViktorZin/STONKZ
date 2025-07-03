@@ -4,10 +4,12 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { HistoricalDataViewComponent } from '../app/historical-data-view/historical-data-view.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    HistoricalDataViewComponent
   ],
   imports: [
     BrowserModule, HttpClientModule,
