@@ -5,6 +5,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { HistoricalDataViewComponent } from './historical-data-view/historical-data-view.component';
 import { UserViewComponent } from './user-view/user-view.component';
 import { HttpClient } from '@angular/common/http';
+import { DayTradingViewComponent } from './day-trading-view/day-trading-view.component';
 
 
 @Component({
@@ -12,7 +13,7 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './app.component.html',
   standalone: true,
   styleUrl: './app.component.css',
-  imports: [HistoricalDataViewComponent, CommonModule, UserViewComponent]
+  imports: [HistoricalDataViewComponent, CommonModule, UserViewComponent, DayTradingViewComponent]
 })
 export class AppComponent  {
 

@@ -4,6 +4,7 @@ import { Stonk } from '../Interfaces/stonk';
 import { StonkzService } from '../stonkz.service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { UserDataService } from '../user-data.service';
+import { DateComparerService } from '../date-comparer.service';
 
 
 @Component({
@@ -66,6 +67,7 @@ export class HistoricalDataViewComponent implements OnInit {
 
   stonkzService = inject(StonkzService);
   userData = inject(UserDataService);
+  dateComparer = inject(DateComparerService);
 
   
   async ngOnInit() {
@@ -77,8 +79,8 @@ export class HistoricalDataViewComponent implements OnInit {
   }
   
   debugDateCheck() {
-    console.log("2020-01-01 is smaller than 2025-01-01? = " + this.userData.isDateLower(new Date("2020-01-01"), new Date("2025-01-01")));
-    console.log("2024-12-31 is smaller than 2020-01-01? = " + this.userData.isDateLower(new Date("2024-12-31"), new Date("2020-01-01")));
+    console.log("2020-01-01 is smaller than 2025-01-01? = " + this.dateComparer.isDateLower(new Date("2020-01-01"), new Date("2025-01-01")));
+    console.log("2024-12-31 is smaller than 2020-01-01? = " + this.dateComparer.isDateLower(new Date("2024-12-31"), new Date("2020-01-01")));
   }
   
   
@@ -92,7 +94,7 @@ export class HistoricalDataViewComponent implements OnInit {
     this.stonkData = [];
     this.filteredStonkData = [];
     this.stonkData = this.stonkzService.getStonkData(this.selectedStonk());
-    this.filteredStonkData = this.stonkData.filter(d => this.userData.isDateLower(new Date(d.date), this.userData.gameDay));
+    this.filteredStonkData = this.stonkData.filter(d => this.dateComparer.isDateLower(new Date(d.date), this.userData.gameDay));
     console.log("I should have stonkData now. stonkdata length: " + this.stonkData.length);
   })
 }
