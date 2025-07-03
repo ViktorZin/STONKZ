@@ -15,12 +15,13 @@ namespace STONKZ.Server.Controllers
             _logger = logger;
         }
 
-        [HttpGet(Name = "GetStonkzData")]
+        [HttpGet(Name = "GetAllStonkzData")]
         public IEnumerable<StonkData> Get()
         {
             StonkzContext context = new StonkzContext();
 
-            var StonkDataList = context.StonkData.Where(d => d.StonkId == 1);
+            //var StonkDataList = context.StonkData.Where(d => d.StonkId == 1);
+            var StonkDataList = context.StonkData;
 
             if (StonkDataList.Any()) 
             {
@@ -37,6 +38,7 @@ namespace STONKZ.Server.Controllers
         [HttpGet("{id}", Name ="GetStonkDataById")]
         public IEnumerable<StonkData> Get(int id)
         {
+            Console.WriteLine("I am trying to get some StonkData....");
             StonkzContext context = new StonkzContext();
 
             var StonkDataList = context.StonkData.Where(d => d.StonkId == id);
@@ -52,5 +54,24 @@ namespace STONKZ.Server.Controllers
 
             }
         }
+
+        [HttpGet("{id}/{toYear}/{toMonth}/{toDay}")]
+        public IEnumerable<StonkData> Get(int id, int toYear, int toMonth, int toDay)
+        {
+            StonkzContext context = new StonkzContext();
+            DateTime DateGate = new DateTime(toYear, toMonth, toDay);
+            var StonkDataList = context.StonkData.Where(d => (d.StonkId == id) && (d.Date <= DateGate));
+
+            if(StonkDataList.Any())
+            {
+                return StonkDataList.ToArray();
+            }
+            else
+            {
+                return new List<StonkData>();
+            }
+        }
+
+
     }
 }
