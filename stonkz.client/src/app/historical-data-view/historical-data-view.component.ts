@@ -22,6 +22,7 @@ import { StonkzService } from '../stonkz.service';
       </select>
     }
 
+   <!-- <button (click)="debugStuff()">Array Lengths right now</button> -->
   `,
   styles: ``
 })
@@ -39,6 +40,10 @@ export class HistoricalDataViewComponent implements OnInit {
     this.stonkzService.loadStonkz();
   }*/
 
+  debugStuff() {
+    console.log("Debugging in HistoricalData.");
+    this.stonkzService.debugLogArrayLength();
+  }
   
   async ngOnInit() {
     console.log("I am in historical Data OnInit, trying to load stonkz");
