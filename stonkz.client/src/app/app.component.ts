@@ -2,7 +2,8 @@ import { Component, OnInit, WritableSignal, signal, effect } from '@angular/core
 import { StonkzData } from './Interfaces/stonkz-data';
 import { Stonk } from './Interfaces/stonk';
 import { CommonModule, DatePipe } from '@angular/common';
-import { HistoricalDataViewComponent } from '../app/historical-data-view/historical-data-view.component';
+import { HistoricalDataViewComponent } from './historical-data-view/historical-data-view.component';
+import { UserViewComponent } from './user-view/user-view.component';
 import { HttpClient } from '@angular/common/http';
 
 
@@ -11,16 +12,16 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './app.component.html',
   standalone: true,
   styleUrl: './app.component.css',
-  imports: [HistoricalDataViewComponent, CommonModule]
+  imports: [HistoricalDataViewComponent, CommonModule, UserViewComponent]
 })
 export class AppComponent  {
 
-  constructor(private http: HttpClient) {
+ /* constructor(private http: HttpClient) {
     this.http.get('/weatherforecast').subscribe(
       data => console.log('WeatherForecast was a Success', data),
       err => console.error('Error', err)
     );
-  }
+  }*/
   /*
   selectedStonk: WritableSignal<number> = signal(1);
   gameDay: WritableSignal<Date> = signal(new Date());

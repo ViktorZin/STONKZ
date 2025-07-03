@@ -30,6 +30,15 @@ export class StonkzService {
     console.log("StonkData Array Length: " + this.stonkData.length);
   }
 
+  public getStonkData(stonkId: number): StonkzData[] {
+    if (stonkId in this.stonkDataDict) {
+      return this.stonkDataDict[stonkId];
+    }
+    else {
+      return [];
+    }
+  }
+
   private generateStonkDataDictionary() {
     console.log("in dict generation. starting.");
     for (let i = 0; i < this.stonkz.length; i++) {
@@ -87,43 +96,12 @@ export class StonkzService {
   }
 
 
-public async getStonkz(): Promise<Stonk[]> {
-  if (this.stonkz.length > 0) {
-    return this.stonkz;
+  public async getStonkz(): Promise<Stonk[]> {
+    if (this.stonkz.length > 0) {
+      return this.stonkz;
+    }
+
+    return await this.loadStonkz();
   }
 
-  return await this.loadStonkz();
-}
-
-  /*
-  public getStonkz() {
-    if (this.stonkz.length === 0) {
-      this.loadStonkz();
-    }
-    return this.stonkz;
-  }*/
-
-  //public getStonkData(stonkId: number, toDate: Date): StonkzData[] {
-    //this.http.get<StonkzData[]>('/stonkdata/' + stonkId + "/" + toDate.getFullYear()
-    //  + "/" + toDate.getMonth() + "/" + toDate.getDate()).subscribe(
-    //    (result) => {
-    //      this.stonkData = result;
-    //    },
-    //    (error) => {
-    //      console.error(error);
-    //    }
-    //);
-    /*
-    this.http.get<StonkzData[]>('/stonkdata/' + 5).subscribe(
-        (result) => {
-          this.stonkData = result;
-        },
-        (error) => {
-          console.error(error);
-        }
-      );
-
-    return this.stonkData;
-    */
- // }
 }
