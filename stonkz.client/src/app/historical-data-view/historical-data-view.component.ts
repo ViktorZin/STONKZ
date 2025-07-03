@@ -2,11 +2,13 @@ import { Component, OnInit, WritableSignal, signal, effect, inject } from '@angu
 import { StonkzData } from '../Interfaces/stonkz-data'
 import { Stonk } from '../Interfaces/stonk';
 import { StonkzService } from '../stonkz.service';
+import { CommonModule, DatePipe } from '@angular/common';
+import { UserDataService } from '../user-data.service';
 
 
 @Component({
   selector: 'app-historical-data-view',
-  imports: [],
+  imports: [CommonModule],
   standalone: true,
   template: `
     <p>
@@ -22,7 +24,35 @@ import { StonkzService } from '../stonkz.service';
       </select>
     }
 
-   <!-- <button (click)="debugStuff()">Array Lengths right now</button> -->
+    <hr>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Price</th>
+        <th>Open</th>
+        <th>High</th>
+        <th>Low</th>
+        <th>Volume</th>
+        <th>ChangePercentage</th>
+      </tr>
+    </thead>  
+    <tbody>
+    @for(stonkd of filteredStonkData; track stonkd.date) {
+      <tr>
+        <td>{{stonkd.date | date:'shortDate'}}</td>
+        <td>{{stonkd.price}} €</td>
+        <td>{{stonkd.open}} €</td>
+        <td>{{stonkd.high}} €</td>
+        <td>{{stonkd.low}} €</td>
+        <td>{{stonkd.volume}} </td>
+        <td>{{stonkd.changePercentage}} %</td>
+        <td>{{stonkd.stonkId}}</td>
+      </tr>
+    }
+    </tbody>
+  </table>
   `,
   styles: ``
 })
@@ -31,33 +61,38 @@ export class HistoricalDataViewComponent implements OnInit {
 
   selectedStonk: WritableSignal<number> = signal(1);
   stonkData: StonkzData[] = [];
+  filteredStonkData: StonkzData[] = [];
   stonkz: Stonk[] = [];
 
   stonkzService = inject(StonkzService);
+  userData = inject(UserDataService);
 
-  /*
-  ngOnInit() {
-    this.stonkzService.loadStonkz();
-  }*/
-
-  debugStuff() {
-    console.log("Debugging in HistoricalData.");
-    this.stonkzService.debugLogArrayLength();
-  }
   
   async ngOnInit() {
     console.log("I am in historical Data OnInit, trying to load stonkz");
-    //this.stonkzService.loadStonkz();
-    //this.stonkz = this.stonkzService.getStonkz();
-    //this.loadStonkz();
     this.stonkz = await this.stonkzService.getStonkz();
     console.log("Stonkz should be loaded now...");
+    this.selectedStonk.set(1);
+    this.debugDateCheck();
   }
   
-
+  debugDateCheck() {
+    console.log("2020-01-01 is smaller than 2025-01-01? = " + this.userData.isDateLower(new Date("2020-01-01"), new Date("2025-01-01")));
+    console.log("2024-12-31 is smaller than 2020-01-01? = " + this.userData.isDateLower(new Date("2024-12-31"), new Date("2020-01-01")));
+  }
   
   
   updateSelectedStonk(event: Event) {
-    console.log("DÖÖP");
+    console.log("Updating selected Stonk");
+    let input: number = Number((event.target as HTMLInputElement).value);
+    this.selectedStonk.set(input);
   }
+
+  stonkUpdate = effect(() => {
+    this.stonkData = [];
+    this.filteredStonkData = [];
+    this.stonkData = this.stonkzService.getStonkData(this.selectedStonk());
+    this.filteredStonkData = this.stonkData.filter(d => this.userData.isDateLower(new Date(d.date), this.userData.gameDay));
+    console.log("I should have stonkData now. stonkdata length: " + this.stonkData.length);
+  })
 }
