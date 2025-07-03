@@ -1,7 +1,8 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable, OnInit, inject, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { StonkzData } from './Interfaces/stonkz-data'
 import { Stonk } from './Interfaces/stonk';
+import { DateComparerService } from './date-comparer.service';
 
 
 @Injectable({
@@ -11,11 +12,14 @@ export class StonkzService {
 
   //stonkData: StonkzData[] = [];
   //stonkDataDict: StonkDataDict = {0, []}
+  public stonkDataDictReady = new EventEmitter<void>();
   stonkDataDict: Record<number, StonkzData[]> = {};
   stonkData: StonkzData[] = [];
   stonkDataPromise: Promise<StonkzData[]> | null = null;
   stonkz: Stonk[] = [];
   loadingPromise: Promise<Stonk[]> | null = null;
+  dateComparer = inject(DateComparerService);
+
   constructor(private http: HttpClient)
   {
     this.loadStonkz();
@@ -39,6 +43,18 @@ export class StonkzService {
     }
   }
 
+  public getStonkDataWithDate(stonkId: number, day: Date): StonkzData | null {
+    //console.log(" getting StonkData With Date. the date is: " + day);
+    if (stonkId in this.stonkDataDict) {
+      for (let i = 0; i < this.stonkDataDict[stonkId].length; i++) {
+        if (this.dateComparer.areDatesEqual(day, new Date(this.stonkDataDict[stonkId][i].date))) {
+          return this.stonkDataDict[stonkId][i];
+        }
+      }
+    }
+    return null;
+  }
+
   private generateStonkDataDictionary() {
     console.log("in dict generation. starting.");
     for (let i = 0; i < this.stonkz.length; i++) {
@@ -52,6 +68,7 @@ export class StonkzService {
       }
     }
     console.log("done with dict generation...");
+    this.stonkDataDictReady.emit();
   }
 
 
