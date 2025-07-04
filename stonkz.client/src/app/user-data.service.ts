@@ -2,6 +2,7 @@ import { Injectable, WritableSignal, signal, effect } from '@angular/core';
 import { StonkzData } from './Interfaces/stonkz-data'
 import { Stonk } from './Interfaces/stonk';
 import { OwnedStonkz } from './Interfaces/owned-stonkz';
+import { UserData } from './Interfaces/user-data';
 
 @Injectable({
   providedIn: 'root'
