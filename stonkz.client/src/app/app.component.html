@@ -1,9 +1,16 @@
 <h1>APP-COMPONENT MAIN</h1>
 
+<nav>
+  <a routerLink="/">Day Trading View</a> |
+  <a [routerLink]="['historicalData', -1]">Historical Data</a>
+</nav>
+
 <app-user-view></app-user-view>
-<app-day-trading-view></app-day-trading-view>
+
+<router-outlet></router-outlet>
 
 
+<!--<app-day-trading-view></app-day-trading-view>-->
 <!--
 <app-historical-data-view></app-historical-data-view>
 

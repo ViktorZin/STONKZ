@@ -5,11 +5,12 @@ import { Stonk } from '../Interfaces/stonk';
 import { StonkzService } from '../stonkz.service';
 import { UserDataService } from '../user-data.service';
 import { DateComparerService } from '../date-comparer.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-day-trading-view',
   standalone: true,
-  imports: [],
+  imports: [RouterLink],
   template: `
     <p>
       day-trading-view works!
@@ -32,7 +33,7 @@ import { DateComparerService } from '../date-comparer.service';
     @for(stonkd of stonkData; track stonkd.stonkId) {
       <tr>
         <td><button [disabled]="testAffordability(stonkd.price)" (click)="buyStonkz(stonkd.stonkId)">BUY</button>  / <button [disabled]="testStonkOwnage(stonkd.stonkId)" (click)="sellStonkz(stonkd.stonkId, stonkd.price)">SELL</button></td>
-        <td>{{getStonkNameById(stonkd.stonkId)}}</td>
+        <td><a [routerLink]="['historicalData', stonkd.stonkId]">{{getStonkNameById(stonkd.stonkId)}}</a></td>
         <td>{{stonkd.price}} €</td>
         <td>{{stonkd.open}} €</td>
         <td>{{stonkd.high}} €</td>
