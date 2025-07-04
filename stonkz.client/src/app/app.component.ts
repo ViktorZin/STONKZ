@@ -6,14 +6,14 @@ import { HistoricalDataViewComponent } from './historical-data-view/historical-d
 import { UserViewComponent } from './user-view/user-view.component';
 import { HttpClient } from '@angular/common/http';
 import { DayTradingViewComponent } from './day-trading-view/day-trading-view.component';
-
+import { RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   standalone: true,
   styleUrl: './app.component.css',
-  imports: [HistoricalDataViewComponent, CommonModule, UserViewComponent, DayTradingViewComponent]
+  imports: [HistoricalDataViewComponent, CommonModule, UserViewComponent, DayTradingViewComponent, RouterOutlet, RouterLink]
 })
 export class AppComponent  {
 

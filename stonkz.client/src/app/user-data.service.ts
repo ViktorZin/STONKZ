@@ -1,12 +1,7 @@
 import { Injectable, WritableSignal, signal, effect } from '@angular/core';
 import { StonkzData } from './Interfaces/stonkz-data'
 import { Stonk } from './Interfaces/stonk';
-
-interface OwnedStonkz {
-  stonkId: number;
-  pricePerStonk: number;
-  boughtDate: string;
-}
+import { OwnedStonkz } from './Interfaces/owned-stonkz';
 
 @Injectable({
   providedIn: 'root'

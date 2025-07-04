@@ -5,6 +5,7 @@ import { StonkzService } from '../stonkz.service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { UserDataService } from '../user-data.service';
 import { DateComparerService } from '../date-comparer.service';
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -18,7 +19,7 @@ import { DateComparerService } from '../date-comparer.service';
 
     <label for="Stonkz">Choose a Stonk: </label>
     @if(stonkz.length > 0) {
-      <select name="Stonkz" id="Stonkz" (change)="updateSelectedStonk($event)">
+      <select (change)="updateSelectedStonk($event)">
       @for(stonk of stonkz; track stonk.stonkId) {
         <option value="{{stonk.stonkId}}">{{stonk.stonkName}}</option>
       }
@@ -58,7 +59,9 @@ import { DateComparerService } from '../date-comparer.service';
   styles: ``
 })
 export class HistoricalDataViewComponent implements OnInit {
+  requestedStonkDataId: string | null = null;
 
+  constructor(private route: ActivatedRoute) { }
 
   selectedStonk: WritableSignal<number> = signal(1);
   stonkData: StonkzData[] = [];
@@ -71,16 +74,31 @@ export class HistoricalDataViewComponent implements OnInit {
 
   
   async ngOnInit() {
+    this.requestedStonkDataId = this.route.snapshot.paramMap.get('id');
     console.log("I am in historical Data OnInit, trying to load stonkz");
     this.stonkz = await this.stonkzService.getStonkz();
     console.log("Stonkz should be loaded now...");
-    this.selectedStonk.set(1);
-    this.debugDateCheck();
+
+    this.setHistoricalData();
+    //this.debugDateCheck();
   }
   
   debugDateCheck() {
     console.log("2020-01-01 is smaller than 2025-01-01? = " + this.dateComparer.isDateLower(new Date("2020-01-01"), new Date("2025-01-01")));
     console.log("2024-12-31 is smaller than 2020-01-01? = " + this.dateComparer.isDateLower(new Date("2024-12-31"), new Date("2020-01-01")));
+  }
+
+  setHistoricalData() {
+    let numId: number = Number(this.requestedStonkDataId);
+    if (this.requestedStonkDataId === null) {
+      this.selectedStonk.set(1);
+    } else if (numId >= 1) {
+      this.selectedStonk.set(numId);
+    }
+    else {
+      this.selectedStonk.set(1);
+    }
+
   }
   
   
