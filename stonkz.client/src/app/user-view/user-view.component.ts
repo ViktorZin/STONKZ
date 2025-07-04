@@ -12,6 +12,7 @@ import { DateComparerService } from '../date-comparer.service';
     <p>
       user-view works! Welcome, {{userData.userName}}!
     </p>
+    <!--<button (click)="addUserData()">ADD USER DATA TO DATABASE</button>-->
     <p>Account Balance: {{userData.accountBalance}} €</p>
     <p>current GameDay: {{userData.gameDay() | date:'EEEE dd.MM.YYYY'}}</p>
     <p>Daily Buy Fee: {{userData.dailyBuyFee}} ||  Daily Sell Fee: {{userData.dailySellFee}}</p>
@@ -74,7 +75,9 @@ export class UserViewComponent  {
     //console.log("Updating GameDay. new Game Day should be: " + nextDay);
   }
 
-  
+  addUserData() {
+    this.userData.setInitialUserData();
+  }
 
 
   

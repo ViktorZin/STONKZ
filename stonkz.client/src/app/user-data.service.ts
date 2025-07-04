@@ -3,24 +3,76 @@ import { StonkzData } from './Interfaces/stonkz-data'
 import { Stonk } from './Interfaces/stonk';
 import { OwnedStonkz } from './Interfaces/owned-stonkz';
 import { UserData } from './Interfaces/user-data';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserDataService {
 
-  userName: string = "ViktorZin";
-  accountBalance: number = 100;
+  userName: string = "";
+  accountBalance: number = 0;
   stonkzWallet: Record<number, OwnedStonkz[]> = {};
   //gameDay: Date = new Date("2022-01-03");
   gameDay: WritableSignal<Date> = signal(new Date("2022-01-03"));
-  transactionfee: number = 1;
+  transactionfee: number = 0;
 
   dailyBuyFee: boolean = true;
   dailySellFee: boolean = true;
 
-  constructor() { }
 
+  ownedStonkzDB: OwnedStonkz[] = [];
+  userDataDB!: UserData;
+
+  constructor(private http: HttpClient)
+  {
+    this.loadUserData();
+
+  }
+
+  //Also die Daten laden korrekt rein, aber ich krieg sie nicht weitergereicht
+  // / vllt muss ich das Fenster/ die einzelnen Felder neu laden. kein Plan.
+  //Ich probier als nächstes nicht mehr die vereinzelnten variables zu verwenden sondern das UserDataDB Field.
+  loadUserData() {
+    this.http.get<UserData>('/userData').subscribe(
+      (result) => {
+        this.userDataDB = result;
+        console.log("I got a Result.");
+        console.log("loeaded Data. now setting UserData from DB");
+        this.userName = this.userDataDB.userName;
+        this.accountBalance = this.userDataDB.accountBalance;
+        this.transactionfee = this.userDataDB.transactionfee;
+        //let day: Date = new Date(this.userDataDB.gameDay);
+        //this.gameDay.set(this.userDataDB.gameDay);
+
+        console.log(this.userDataDB);
+
+        console.log("UserData is set. lets go!");
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+  }
+
+  //this is only for creating a User. Once.
+  setInitialUserData() {
+    let initData: UserData = {
+      userName: this.userName,
+      accountBalance: this.accountBalance,
+      gameDay: new Date(this.gameDay()),
+      transactionfee: this.transactionfee
+    };
+    console.log("POSTING INTO DATABASE!!!");
+    this.http.post<UserData>('/userData', initData).subscribe({
+      next: (response) => {
+        console.log('User Created.', response);
+      },
+      error: (err) => {
+        console.error('Error: ', err);
+      }
+    });
+  }
 
 
   buyStonkz(data: StonkzData) {
