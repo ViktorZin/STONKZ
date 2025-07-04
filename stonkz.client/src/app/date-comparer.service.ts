@@ -26,4 +26,24 @@ export class DateComparerService {
       firstDate.valueOf() <= secondDate.valueOf()
     );
   }
+
+  isWeekDay(date: Date): boolean
+  {
+    if (date.toDateString().includes("Sat") || date.toDateString().includes("Sun")) {
+      return false;
+    }
+
+    return true;
+  }
+
+  isLastDayOfMonth(date: Date): boolean {
+    //getMonth() + 1 because it gets Month 0, gives 31 Days, probably because it calculates as December.
+    let daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+    if (date.getDate() === daysInMonth) {
+      console.log("PAYDAY!");
+      return true;
+    }
+
+    return false;
+  }
 }

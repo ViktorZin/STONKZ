@@ -42,7 +42,7 @@ import { DateComparerService } from '../date-comparer.service';
     <tbody>
     @for(stonkd of filteredStonkData; track stonkd.date) {
       <tr>
-        <td>{{stonkd.date | date:'shortDate'}}</td>
+        <td>{{stonkd.date | date:'dd.MM.YYYY'}}</td>
         <td>{{stonkd.price}} €</td>
         <td>{{stonkd.open}} €</td>
         <td>{{stonkd.high}} €</td>
@@ -94,7 +94,7 @@ export class HistoricalDataViewComponent implements OnInit {
     this.stonkData = [];
     this.filteredStonkData = [];
     this.stonkData = this.stonkzService.getStonkData(this.selectedStonk());
-    this.filteredStonkData = this.stonkData.filter(d => this.dateComparer.isDateLower(new Date(d.date), this.userData.gameDay));
+    this.filteredStonkData = this.stonkData.filter(d => this.dateComparer.isDateLower(new Date(d.date), this.userData.gameDay()));
     console.log("I should have stonkData now. stonkdata length: " + this.stonkData.length);
   })
 }
