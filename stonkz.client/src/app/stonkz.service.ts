@@ -121,4 +121,17 @@ export class StonkzService {
     return await this.loadStonkz();
   }
 
+  getStonkzIDs() {
+    return Array.from({ length: this.stonkz.length }, (_, i) => i);
+  }
+
+  getStonkzNameById(id: number) {
+    for (let i = 0; i < this.stonkz.length; i++) {
+      if (this.stonkz[i].stonkId === id) {
+        return this.stonkz[i].stonkName;
+      }
+    }
+    return "";
+  }
+
 }
