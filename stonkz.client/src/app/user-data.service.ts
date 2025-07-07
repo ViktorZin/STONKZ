@@ -135,7 +135,7 @@ export class UserDataService {
 
   saveOwnedStonkDataToDB() {
     if (this.ownedStonkzDB.length > 0) {
-      this.http.post<OwnedStonkz>('/ownedSTonkz/', this.ownedStonkzDB).subscribe(
+      this.http.post<OwnedStonkz>('/ownedStonkz/', this.ownedStonkzDB).subscribe(
         (response) => {
           console.log("Saved OwnedStonkz Data: ", response);
         },
