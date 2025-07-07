@@ -17,20 +17,18 @@ namespace STONKZ.Server.Controllers
         }
 
         [HttpGet(Name = "GetUserData")]
-        public IEnumerable<UserData> Get()
+        public ActionResult<UserData> Get()
         {
             UserDataContext context = new UserDataContext();
 
-            var UserData = context.UserDatas;
+            var user = context.UserDatas.FirstOrDefault();
 
-            if (UserData.Any()) 
+            if (user == null) 
             {
-                return UserData.ToArray();
+                return NotFound();
             }
-            else
-            {
-                return new List<UserData>();    
-            }
+
+            return Ok(user);
         }
 
         [HttpPost]

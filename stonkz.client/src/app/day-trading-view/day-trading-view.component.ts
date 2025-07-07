@@ -97,7 +97,7 @@ export class DayTradingViewComponent implements OnInit {
   //Reversed logic, because I am asking if a button is disabled. so true means disabled.
   testAffordability(price: number): boolean {
     //console.log("Testing Affordability for price: " + price + " against account Balance of " + this.userData.accountBalance);
-    if (this.userData.accountBalance >= price) {
+    if (this.userData.userDataDB.accountBalance >= price) {
       return false;
     }
     return true;
@@ -120,7 +120,7 @@ export class DayTradingViewComponent implements OnInit {
     console.log("I wanted to buy " + this.getStonkNameById(id) + " stonkz");
     for (let i = 0; i < this.stonkData.length; i++) {
       if (id === this.stonkData[i].stonkId) {
-        if (this.userData.accountBalance >= this.stonkData[i].price) {
+        if (this.userData.userDataDB.accountBalance >= this.stonkData[i].price) {
           this.userData.buyStonkz(this.stonkData[i]);
         } else {
           console.log("Insufficient Funds!");

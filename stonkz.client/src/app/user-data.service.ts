@@ -10,12 +10,10 @@ import { HttpClient } from '@angular/common/http';
 })
 export class UserDataService {
 
-  userName: string = "";
-  accountBalance: number = 0;
+  
   stonkzWallet: Record<number, OwnedStonkz[]> = {};
   //gameDay: Date = new Date("2022-01-03");
   gameDay: WritableSignal<Date> = signal(new Date("2022-01-03"));
-  transactionfee: number = 0;
 
   dailyBuyFee: boolean = true;
   dailySellFee: boolean = true;
@@ -30,24 +28,34 @@ export class UserDataService {
 
   }
 
-  //Also die Daten laden korrekt rein, aber ich krieg sie nicht weitergereicht
-  // / vllt muss ich das Fenster/ die einzelnen Felder neu laden. kein Plan.
-  //Ich probier als nächstes nicht mehr die vereinzelnten variables zu verwenden sondern das UserDataDB Field.
+
   loadUserData() {
     this.http.get<UserData>('/userData').subscribe(
       (result) => {
         this.userDataDB = result;
-        console.log("I got a Result.");
         console.log("loeaded Data. now setting UserData from DB");
-        this.userName = this.userDataDB.userName;
-        this.accountBalance = this.userDataDB.accountBalance;
-        this.transactionfee = this.userDataDB.transactionfee;
-        //let day: Date = new Date(this.userDataDB.gameDay);
-        //this.gameDay.set(this.userDataDB.gameDay);
 
-        console.log(this.userDataDB);
+        console.log("the date in UserDataDB: " + this.userDataDB.gameDay);
+        let day: Date = new Date(this.userDataDB.gameDay);
 
+        console.log("the userDate converted to DAY: " + day);
+        this.gameDay.set(new Date(this.userDataDB.gameDay));
+        console.log("this.gameDay set to DAY: " + this.gameDay());
+        console.log("user ID is: " + this.userDataDB.id);
         console.log("UserData is set. lets go!");
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+  }
+
+  saveUserDataToDB() {
+    this.userDataDB.gameDay = new Date(this.gameDay());
+    //console.log("Saving Data to DB. New Date: " + this.userDataDB.gameDay);
+    this.http.put<UserData>('/userData/' + this.userDataDB.id, this.userDataDB).subscribe(
+      (response) => {
+        console.log("UserData Update: ", response);
       },
       (error) => {
         console.error(error);
@@ -57,12 +65,7 @@ export class UserDataService {
 
   //this is only for creating a User. Once.
   setInitialUserData() {
-    let initData: UserData = {
-      userName: this.userName,
-      accountBalance: this.accountBalance,
-      gameDay: new Date(this.gameDay()),
-      transactionfee: this.transactionfee
-    };
+    let initData: UserData = this.getInitialData();
     console.log("POSTING INTO DATABASE!!!");
     this.http.post<UserData>('/userData', initData).subscribe({
       next: (response) => {
@@ -72,6 +75,29 @@ export class UserDataService {
         console.error('Error: ', err);
       }
     });
+  }
+
+  resetUserDataToDefault() {
+    let initData: UserData = this.getInitialData();
+    this.http.put<UserData>('/userData/' + initData.id, initData).subscribe(
+      (response) => {
+        console.log("UserData Update: ", response);
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+  }
+
+  getInitialData(): UserData {
+    let initData: UserData = {
+      id: 2,
+      userName: "ViktorZin",
+      accountBalance: 100,
+      gameDay: new Date("2022-01-03"),
+      transactionfee: 1
+    };
+    return initData;
   }
 
 
@@ -84,11 +110,11 @@ export class UserDataService {
     }
 
     if (this.dailyBuyFee) {
-      this.accountBalance -= this.transactionfee;
+      this.userDataDB.accountBalance -= this.userDataDB.transactionfee;
       this.dailyBuyFee = false;
     }
 
-    this.accountBalance -= data.price;
+    this.userDataDB.accountBalance -= data.price;
     if (data.stonkId in this.stonkzWallet) {
 
     } else {
@@ -106,11 +132,11 @@ export class UserDataService {
       if (this.stonkzWallet[id].length > 0) {
 
         if (this.dailySellFee) {
-          this.accountBalance -= this.transactionfee;
+          this.userDataDB.accountBalance -= this.userDataDB.transactionfee;
           this.dailySellFee = false;
         }
 
-        this.accountBalance += currentPrice;
+        this.userDataDB.accountBalance += currentPrice;
         this.stonkzWallet[id].pop();
       }
     } else {
