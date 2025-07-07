@@ -6,7 +6,6 @@
         public int StonkId { get; set; }
         public decimal PricePerStonk { get; set; }
         public DateTime BoughtDate { get; set; }
-
-        public UserData UserData { get; set; }
+        public int userId { get; set; }
     }
 }

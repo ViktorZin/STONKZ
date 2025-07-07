@@ -32,6 +32,26 @@ namespace STONKZ.Server.Controllers
             }
         }
 
+        [HttpPost("SyncOwnedStonkz")]
+        public IActionResult Post([FromBody] List<OwnedStonkz> OwdStonkz)
+        {
+            UserDataContext context = new UserDataContext();
+            foreach(var stonk in OwdStonkz)
+            {
+                if(stonk.Id == 0 || !context.OwnedStonkzs.Any(s => s.Id == stonk.Id))
+                {
+                    context.OwnedStonkzs.Add(stonk);
+                }
+                else
+                {
+                    context.OwnedStonkzs.Update(stonk);
+                }
+            }
+
+            context.SaveChanges();
+            return Ok();
+        }
+
 
         [HttpPost(Name = "CreateOwnedStonkz")]
         public IActionResult Post([FromBody] OwnedStonkz OwdStonkz) 

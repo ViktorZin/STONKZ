@@ -76,6 +76,7 @@ export class UserViewComponent  {
     this.userData.gameDay.set(nextDay);
 
     this.userData.saveUserDataToDB();
+    this.userData.saveOwnedStonkDataToDB();
 
     //console.log("Updating GameDay. new Game Day should be: " + nextDay);
   }

@@ -18,7 +18,7 @@ export class UserDataService {
   dailyBuyFee: boolean = true;
   dailySellFee: boolean = true;
 
-
+  highestOwnedStonkzId: number = 1;
   ownedStonkzDB: OwnedStonkz[] = [];
   userDataDB!: UserData;
 
@@ -104,10 +104,14 @@ export class UserDataService {
   buyStonkz(data: StonkzData) {
 
     let newStonkz: OwnedStonkz = {
+      id: this.highestOwnedStonkzId,
       stonkId: data.stonkId,
       pricePerStonk: data.price,
-      boughtDate: new Date(this.gameDay()).toString()
+      boughtDate: new Date(this.gameDay()).toString(),
+      userId: this.userDataDB.id
     }
+
+    this.highestOwnedStonkzId++;
 
     if (this.dailyBuyFee) {
       this.userDataDB.accountBalance -= this.userDataDB.transactionfee;
@@ -123,8 +127,23 @@ export class UserDataService {
 
     
     this.stonkzWallet[data.stonkId].push(newStonkz);
+    this.ownedStonkzDB.push(newStonkz);
+    
 
     console.log("Now I own " + this.stonkzWallet[data.stonkId].length + " of this stonk!");
+  }
+
+  saveOwnedStonkDataToDB() {
+    if (this.ownedStonkzDB.length > 0) {
+      this.http.post<OwnedStonkz>('/ownedSTonkz/', this.ownedStonkzDB).subscribe(
+        (response) => {
+          console.log("Saved OwnedStonkz Data: ", response);
+        },
+        (error) => {
+          console.error(error);
+        }
+      )
+    }
   }
 
   sellStonkz(id: number, currentPrice: number) {
