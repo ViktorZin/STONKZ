@@ -105,7 +105,7 @@ export class DayTradingViewComponent implements OnInit {
 
   //Reversed logic, because I am asking if a button is disabled. so true means disabled.
   testStonkOwnage(id: number): boolean {
-    if (id in this.userData.stonkzWallet) {
+    /*if (id in this.userData.stonkzWallet) {
       if (this.userData.stonkzWallet[id].length > 0) {
         return false;
       } else {
@@ -113,7 +113,16 @@ export class DayTradingViewComponent implements OnInit {
       }
     } else {
       return true;
+    }*/
+
+    ///ich muss hier die owned gegen die toSell liste gegenrechnen.
+    if (this.userData.ownedStonkzDB.some(x => x.stonkId === id)) {
+      return false;
+    } else {
+      return true;
     }
+
+
   }
 
   buyStonkz(id: number) {

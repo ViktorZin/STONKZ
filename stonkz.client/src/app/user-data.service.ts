@@ -4,45 +4,48 @@ import { Stonk } from './Interfaces/stonk';
 import { OwnedStonkz } from './Interfaces/owned-stonkz';
 import { UserData } from './Interfaces/user-data';
 import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserDataService {
 
-  
-  stonkzWallet: Record<number, OwnedStonkz[]> = {};
   //gameDay: Date = new Date("2022-01-03");
   gameDay: WritableSignal<Date> = signal(new Date("2022-01-03"));
 
   dailyBuyFee: boolean = true;
   dailySellFee: boolean = true;
 
-  highestOwnedStonkzId: number = 1;
   ownedStonkzDB: OwnedStonkz[] = [];
+
+  sellableStonkz: OwnedStonkz[] = [];
+  //ownedStonkzPromise: Promise<OwnedStonkz[]> | null = null;
   userDataDB!: UserData;
 
   constructor(private http: HttpClient)
   {
     this.loadUserData();
-
+    this.getOwnedStonkzDataFromDB();
   }
+
 
 
   loadUserData() {
     this.http.get<UserData>('/userData').subscribe(
       (result) => {
         this.userDataDB = result;
-        console.log("loeaded Data. now setting UserData from DB");
+        //console.log("loeaded Data. now setting UserData from DB");
 
-        console.log("the date in UserDataDB: " + this.userDataDB.gameDay);
+        //console.log("the date in UserDataDB: " + this.userDataDB.gameDay);
         let day: Date = new Date(this.userDataDB.gameDay);
 
-        console.log("the userDate converted to DAY: " + day);
+        //console.log("the userDate converted to DAY: " + day);
         this.gameDay.set(new Date(this.userDataDB.gameDay));
-        console.log("this.gameDay set to DAY: " + this.gameDay());
-        console.log("user ID is: " + this.userDataDB.id);
-        console.log("UserData is set. lets go!");
+        //console.log("this.gameDay set to DAY: " + this.gameDay());
+        //console.log("user ID is: " + this.userDataDB.id);
+        //console.log("UserData is set. lets go!");
+        console.log("TRANSACTION FEE FROM DB: " + this.userDataDB.transactionFee);
       },
       (error) => {
         console.error(error);
@@ -91,53 +94,86 @@ export class UserDataService {
 
   getInitialData(): UserData {
     let initData: UserData = {
-      id: 2,
+      id: 0,
       userName: "ViktorZin",
       accountBalance: 100,
       gameDay: new Date("2022-01-03"),
-      transactionfee: 1
+      transactionFee: 1
     };
     return initData;
   }
 
+  getOwnedStonkzDataFromDB() {
+    this.ownedStonkzDB = [];
+    console.log("Getting OwnedSTonkzs from DB");
+    this.http.get<OwnedStonkz[]>('/ownedStonkz/').subscribe({
+      next: (data) => {
+        this.ownedStonkzDB = data;
+        console.log("Get Successful. Array Length: " + this.ownedStonkzDB.length);
+        
+      },
+      error: (err) => {
+        console.error("OwnedStonkz Loading Error: ", err);
+
+      }
+    });
+  }
+
+
+  async removeOwnedStonkzFromDB(): Promise<void> {
+    if (this.sellableStonkz.length > 0) {
+      try {
+        let result = await firstValueFrom(
+          this.http.delete<OwnedStonkz[]>('/ownedStonkz/', { body: this.sellableStonkz })
+        );
+        this.sellableStonkz = [];
+      } catch (error) {
+        console.error("Delete Failed", error);
+        throw error;
+      }
+      /*
+      this.http.delete<OwnedStonkz[]>('/ownedStonkz/', { body: this.sellableStonkz }).subscribe({
+        next: (data) => {
+          console.log("Deletion successful");
+          //.ownedStonkzDB = this.ownedStonkzDB.filter(stonk => !this.sellableStonkz.some(del => del.id === stonk.id));
+          this.sellableStonkz = [];
+        },
+        error: (err) => {
+          console.error("Delete Failed", err);
+        }
+      })*/
+    }
+  }
 
   buyStonkz(data: StonkzData) {
 
     let newStonkz: OwnedStonkz = {
-      id: this.highestOwnedStonkzId,
+      id: 0,
       stonkId: data.stonkId,
       pricePerStonk: data.price,
-      boughtDate: new Date(this.gameDay()).toString(),
+      boughtDate: new Date(this.gameDay()).toISOString(),
       userId: this.userDataDB.id
     }
 
-    this.highestOwnedStonkzId++;
-
     if (this.dailyBuyFee) {
-      this.userDataDB.accountBalance -= this.userDataDB.transactionfee;
+      this.userDataDB.accountBalance -= this.userDataDB.transactionFee;
       this.dailyBuyFee = false;
     }
 
     this.userDataDB.accountBalance -= data.price;
-    if (data.stonkId in this.stonkzWallet) {
-
-    } else {
-      this.stonkzWallet[data.stonkId] = [];
-    }
-
-    
-    this.stonkzWallet[data.stonkId].push(newStonkz);
+  
     this.ownedStonkzDB.push(newStonkz);
-    
-
-    console.log("Now I own " + this.stonkzWallet[data.stonkId].length + " of this stonk!");
+   
   }
 
   saveOwnedStonkDataToDB() {
     if (this.ownedStonkzDB.length > 0) {
-      this.http.post<OwnedStonkz>('/ownedStonkz/', this.ownedStonkzDB).subscribe(
-        (response) => {
-          console.log("Saved OwnedStonkz Data: ", response);
+      console.log("trying to save OwnedStonkzData");
+      this.http.post<OwnedStonkz[]>('/ownedStonkz/', this.ownedStonkzDB).subscribe(
+        (response: OwnedStonkz[]) => {
+          //console.log("Saved OwnedStonkz Data: ", response);
+          //this.ownedStonkzDB = [];
+          this.ownedStonkzDB = response;
         },
         (error) => {
           console.error(error);
@@ -147,20 +183,21 @@ export class UserDataService {
   }
 
   sellStonkz(id: number, currentPrice: number) {
-    if (id in this.stonkzWallet) {
-      if (this.stonkzWallet[id].length > 0) {
-
-        if (this.dailySellFee) {
-          this.userDataDB.accountBalance -= this.userDataDB.transactionfee;
-          this.dailySellFee = false;
-        }
-
-        this.userDataDB.accountBalance += currentPrice;
-        this.stonkzWallet[id].pop();
-      }
-    } else {
-      console.log("ERROR: tried to sell stonkz I do not own!");
+    if (this.dailySellFee) {
+      this.userDataDB.accountBalance -= this.userDataDB.transactionFee;
+      this.dailySellFee = false;
     }
+
+    this.userDataDB.accountBalance += currentPrice;
+    for (let i = 0; i < this.ownedStonkzDB.length; i++) {
+      if (this.ownedStonkzDB[i].stonkId === id) {
+        this.sellableStonkz.push(this.ownedStonkzDB[i]);
+        //delete this.ownedStonkzDB[i];
+        this.ownedStonkzDB.splice(i, 1);
+        break;
+      }
+    }
+
   }
   
 }

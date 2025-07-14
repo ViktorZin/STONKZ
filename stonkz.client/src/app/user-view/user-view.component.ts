@@ -3,6 +3,7 @@ import { UserDataService } from '../user-data.service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { StonkzService } from '../stonkz.service';
 import { DateComparerService } from '../date-comparer.service';
+import { OwnedStonkz } from '../Interfaces/owned-stonkz';
 
 @Component({
   selector: 'app-user-view',
@@ -13,7 +14,7 @@ import { DateComparerService } from '../date-comparer.service';
      <p>
       Welcome, User {{userData.userDataDB.userName}}!
     </p>
-    <button (click)="resetUserData()">RESET DB USER DATA</button>
+    <!--<button (click)="resetUserData()">RESET DB USER DATA</button>-->
     <p>Account Balance: {{userData.userDataDB.accountBalance}} €</p>
     <p>current GameDay: {{userData.gameDay() | date:'EEEE dd.MM.YYYY'}}</p>
     <p>Daily Buy Fee: {{userData.dailyBuyFee}} ||  Daily Sell Fee: {{userData.dailySellFee}}</p>
@@ -32,10 +33,11 @@ import { DateComparerService } from '../date-comparer.service';
             </thead>
             <tbody>
       @for(entry of stonkzService.getStonkzIDs(); track entry) {
-        @if(userData.stonkzWallet[entry + 1]) {
+        @let searchEntry = entry +1;
+        @if(checkStonkOwnage(searchEntry)) {
           <!--<p>{{stonkzService.getStonkzNameById(userData.stonkzWallet[entry + 1][0].stonkId)}}</p>-->
 
-              @for(boughtStonk of userData.stonkzWallet[entry+1]; track $index) {
+              @for(boughtStonk of getOwnedStonkArray(searchEntry); track $index) {
                 <tr>
                   <td>{{stonkzService.getStonkzNameById(boughtStonk.stonkId)}}</td>
                   <td>{{boughtStonk.pricePerStonk}} €</td>
@@ -62,23 +64,24 @@ export class UserViewComponent  {
   stonkzService = inject(StonkzService);
   dateComparer = inject(DateComparerService);
 
-  progressToNextDay() {
+  async progressToNextDay() {
     //this.userData.gameDay.setDate(this.userData.gameDay.getDate() + 1);
     if (this.dateComparer.isLastDayOfMonth(this.userData.gameDay())) {
       this.userData.userDataDB.accountBalance += 100;
     }
+    
+    await this.userData.removeOwnedStonkzFromDB().then(() => {
+      //this.userData.getOwnedStonkzDataFromDB();
+      this.userData.dailyBuyFee = true;
+      this.userData.dailySellFee = true;
 
-    this.userData.dailyBuyFee = true;
-    this.userData.dailySellFee = true;
+      let nextDay: Date = new Date(this.userData.gameDay());
+      nextDay.setDate(nextDay.getDate() + 1);
+      this.userData.gameDay.set(nextDay);
 
-    let nextDay: Date = new Date(this.userData.gameDay());
-    nextDay.setDate(nextDay.getDate() + 1);
-    this.userData.gameDay.set(nextDay);
-
-    this.userData.saveUserDataToDB();
-    this.userData.saveOwnedStonkDataToDB();
-
-    //console.log("Updating GameDay. new Game Day should be: " + nextDay);
+      this.userData.saveUserDataToDB();
+      this.userData.saveOwnedStonkDataToDB();
+    })
   }
 
   addUserData() {
@@ -87,6 +90,18 @@ export class UserViewComponent  {
 
   resetUserData() {
     this.userData.resetUserDataToDefault();
+  }
+
+  checkStonkOwnage(id: number): boolean {
+    if (this.userData.ownedStonkzDB.some(x => x.stonkId === id))
+    {
+      return true;
+    }
+    return false;
+  }
+
+  getOwnedStonkArray(id: number): OwnedStonkz[] {
+    return this.userData.ownedStonkzDB.filter(x => x.stonkId === id);
   }
 
 

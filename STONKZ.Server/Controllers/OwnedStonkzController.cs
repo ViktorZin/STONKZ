@@ -19,11 +19,13 @@ namespace STONKZ.Server.Controllers
         [HttpGet(Name = "GetOwnedStonkz")]
         public IEnumerable<OwnedStonkz> Get()
         {
+            Console.WriteLine("SERVER GET OWNEDSTONKZ");
             UserDataContext context = new UserDataContext();
 
             var OwnedStonkz = context.OwnedStonkzs;
             if(OwnedStonkz.Any())
             {
+                Console.WriteLine("SERVER FOUND OWNED STONKZ. RETURNING");
                 return OwnedStonkz.ToArray();
             }
             else
@@ -32,12 +34,24 @@ namespace STONKZ.Server.Controllers
             }
         }
 
-        [HttpPost("SyncOwnedStonkz")]
+        [HttpPost]
         public IActionResult Post([FromBody] List<OwnedStonkz> OwdStonkz)
         {
+            Console.WriteLine("OWNED STONKZ POST METHOD START");
+            if(OwdStonkz == null)
+            {
+                return BadRequest("Request body is missing or invalid");
+            }
+
             UserDataContext context = new UserDataContext();
             foreach(var stonk in OwdStonkz)
             {
+                if(stonk == null)
+                {
+                    continue;
+                }
+
+
                 if(stonk.Id == 0 || !context.OwnedStonkzs.Any(s => s.Id == stonk.Id))
                 {
                     context.OwnedStonkzs.Add(stonk);
@@ -49,10 +63,10 @@ namespace STONKZ.Server.Controllers
             }
 
             context.SaveChanges();
-            return Ok();
+            return Ok(OwdStonkz);
         }
 
-
+        /*
         [HttpPost(Name = "CreateOwnedStonkz")]
         public IActionResult Post([FromBody] OwnedStonkz OwdStonkz) 
         {
@@ -85,6 +99,29 @@ namespace STONKZ.Server.Controllers
                 context.SaveChanges();
             }
 
+            return NoContent();
+        }*/
+
+        [HttpDelete]
+        public IActionResult Delete([FromBody] List<OwnedStonkz>OwdStonkz)
+        {
+            Console.WriteLine("Attempting to delete OwnedStonkz. Given List count: " + OwdStonkz.Count);
+            using (var context = new UserDataContext())
+            {
+                for(int i = 0; i <  OwdStonkz.Count; i++)
+                {
+                    var data = context.OwnedStonkzs.Find(OwdStonkz[i].Id);
+                    if (data == null)
+                    {
+                        return NotFound("OwnedStonkz not Found");
+
+                    } else
+                    {
+                        context.OwnedStonkzs.Remove(data);             
+                    }
+                }
+                context.SaveChanges();
+            }
             return NoContent();
         }
 
