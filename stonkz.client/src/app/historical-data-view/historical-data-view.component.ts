@@ -1,4 +1,4 @@
-import { Component, OnInit, WritableSignal, signal, effect, inject } from '@angular/core';
+import { Component, OnInit, WritableSignal, signal, effect, inject, ViewChild } from '@angular/core';
 import { StonkzData } from '../Interfaces/stonkz-data'
 import { Stonk } from '../Interfaces/stonk';
 import { StonkzService } from '../stonkz.service';
@@ -6,11 +6,20 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { UserDataService } from '../user-data.service';
 import { DateComparerService } from '../date-comparer.service';
 import { ActivatedRoute } from '@angular/router';
+import { NgApexchartsModule, ChartComponent, ApexAxisChartSeries, ApexChart, ApexXAxis, ApexTitleSubtitle } from 'ng-apexcharts';
+
+
+export type ChartOptions = {
+  series: ApexAxisChartSeries;
+  chart: ApexChart;
+  xaxis: ApexXAxis;
+  title: ApexTitleSubtitle;
+}
 
 
 @Component({
   selector: 'app-historical-data-view',
-  imports: [CommonModule],
+  imports: [CommonModule, NgApexchartsModule],
   standalone: true,
   template: `
   <hr>
@@ -25,35 +34,51 @@ import { ActivatedRoute } from '@angular/router';
     }
     <h1>Stonk: {{stonkzService.getStonkzNameById(selectedStonk())}}</h1>
    </div>
-<div class="tableContainer">
-  <table>
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Price</th>
-        <th>Change %</th>
-        <th>Open</th>
-        <th>High</th>
-        <th>Low</th>
-        <th>Volume</th>
 
-      </tr>
-    </thead>  
-    <tbody>
-    @for(stonkd of filteredStonkData; track stonkd.date) {
-      <tr>
-        <td>{{stonkd.date | date:'dd.MM.YYYY'}}</td>
-        <td class="textPrice">{{stonkd.price}} €</td>
-        <td [class]="stonkzService.checkValue(stonkd.changePercentage, ' textRight')">{{stonkd.changePercentage}} %</td>
-        <td class="gray">{{stonkd.open}} €</td>
-        <td class="gray">{{stonkd.high}} €</td>
-        <td class="gray">{{stonkd.low}} €</td>
-        <td>{{stonkd.volume}} </td>
-        <!--<td>{{stonkd.stonkId}}</td>-->
-      </tr>
-    }
-    </tbody>
-  </table>
+   <div>
+   
+    <div class="Graph"
+    (mouseenter)="setPageScroll(false)"
+    (mouseleave)="setPageScroll(true)"
+    >
+      <apx-chart
+      [series]="chartOptions.series"
+      [chart]="chartOptions.chart"
+      [xaxis]="chartOptions.xaxis"
+      [title]="chartOptions.title"></apx-chart>
+    </div>
+    
+
+  <div class="tableContainer">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Price</th>
+          <th>Change %</th>
+          <th>Open</th>
+          <th>High</th>
+          <th>Low</th>
+          <th>Volume</th>
+
+        </tr>
+      </thead>  
+      <tbody>
+      @for(stonkd of filteredStonkData; track stonkd.date) {
+        <tr>
+          <td>{{stonkd.date | date:'dd.MM.yyyy'}}</td>
+          <td class="textPrice">{{stonkd.price}} €</td>
+          <td [class]="stonkzService.checkValue(stonkd.changePercentage, ' textRight')">{{stonkd.changePercentage}} %</td>
+          <td class="gray">{{stonkd.open}} €</td>
+          <td class="gray">{{stonkd.high}} €</td>
+          <td class="gray">{{stonkd.low}} €</td>
+          <td>{{stonkd.volume}} </td>
+          <!--<td>{{stonkd.stonkId}}</td>-->
+        </tr>
+      }
+      </tbody>
+    </table>
+    </div>
   </div>
   `,
   styles: ``
@@ -61,7 +86,21 @@ import { ActivatedRoute } from '@angular/router';
 export class HistoricalDataViewComponent implements OnInit {
   requestedStonkDataId: string | null = null;
 
-  constructor(private route: ActivatedRoute) { }
+  @ViewChild("chart") chart!: ChartComponent;
+
+  public chartOptions!: {
+    series: ApexAxisChartSeries;
+    chart: ApexChart;
+    title: ApexTitleSubtitle;
+    xaxis: ApexXAxis;
+  }
+
+  constructor(private route: ActivatedRoute)
+  {
+    this.updateChartData();
+  }
+
+
 
   selectedStonk: WritableSignal<number> = signal(1);
   stonkData: StonkzData[] = [];
@@ -81,8 +120,55 @@ export class HistoricalDataViewComponent implements OnInit {
 
     this.setHistoricalData();
     //this.debugDateCheck();
+
+    
+
   }
-  
+
+  updateChartData() {
+    this.chartOptions = {
+      series: [
+        {
+          name: "My-series",
+          data: this.getChartData()
+        }
+      ],
+      chart: {
+        zoom: {
+          enabled: true
+        },
+        height: 500,
+        type: "line",
+      },
+      title: {
+        text: ""
+      },
+      xaxis: {
+        categories: this.getChartXAxis()
+      }
+    };
+  }
+
+
+  getChartData(): number[] {
+    //console.log("Chart Price: " + this.stonkData.map(stonk => stonk.price).slice(0, 12));
+    return this.filteredStonkData.map(stonk => stonk.price).reverse()/*.slice(0, 12)*/;
+  }
+
+  getChartXAxis(): string[] {
+    //console.log("Chart Dates: " + this.stonkData.map(stonk => stonk.date).slice(0, 12));
+    return this.filteredStonkData.map(stonk => stonk.date.split("T")[0]).reverse()/*.slice(0, 12)*/;
+  }
+
+  setPageScroll(state: boolean) {
+    if (state) {
+      document.body.style.overflow = '';
+    } else {
+      document.body.style.overflow = 'hidden';
+    }
+
+  }
+
   debugDateCheck() {
     console.log("2020-01-01 is smaller than 2025-01-01? = " + this.dateComparer.isDateLower(new Date("2020-01-01"), new Date("2025-01-01")));
     console.log("2024-12-31 is smaller than 2020-01-01? = " + this.dateComparer.isDateLower(new Date("2024-12-31"), new Date("2020-01-01")));
@@ -98,7 +184,7 @@ export class HistoricalDataViewComponent implements OnInit {
     else {
       this.selectedStonk.set(1);
     }
-
+    //this.updateChartData();
   }
   
   
@@ -114,5 +200,6 @@ export class HistoricalDataViewComponent implements OnInit {
     this.stonkData = this.stonkzService.getStonkData(this.selectedStonk());
     this.filteredStonkData = this.stonkData.filter(d => this.dateComparer.isDateLower(new Date(d.date), this.userData.gameDay()));
     console.log("I should have stonkData now. stonkdata length: " + this.stonkData.length);
+    this.updateChartData();
   })
 }

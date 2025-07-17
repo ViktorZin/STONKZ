@@ -16,7 +16,7 @@ import { OwnedStonkz } from '../Interfaces/owned-stonkz';
     </p>
     <!--<button (click)="resetUserData()">RESET DB USER DATA</button>-->
     <p>Account Balance: {{userData.userDataDB.accountBalance.toFixed(2)}} €  /  invested: {{getCalculatedInvestedMoney()}} €</p>
-    <p>current GameDay: {{userData.gameDay() | date:'EEEE dd.MM.YYYY'}}</p>
+    <p>current GameDay: {{userData.gameDay() | date:'EEEE dd.MM.yyyy'}}</p>
     <p>Daily Buy Fee: {{userData.dailyBuyFee}} ||  Daily Sell Fee: {{userData.dailySellFee}}</p>
     <button (click)="progressToNextDay()"> Progress to Next Day </button>
 
@@ -46,7 +46,7 @@ import { OwnedStonkz } from '../Interfaces/owned-stonkz';
                 <tr>
                   <td class="textRight">{{stonkzService.getStonkzNameById(boughtStonk.stonkId)}}</td>
                   <td class="textRight">{{boughtStonk.pricePerStonk}} €</td>
-                  <td>{{boughtStonk.boughtDate | date:'dd.MM.YYYY'}}</td>
+                  <td>{{boughtStonk.boughtDate | date:'dd.MM.yyyy'}}</td>
                   <td>{{getCurrentPriceOfStonk(boughtStonk.stonkId)}} €</td>
                   <td [class]="stonkzService.checkValue(data)">{{data.toFixed(2)}} €</td>
                 </tr>

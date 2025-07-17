@@ -1,16 +1,27 @@
 /* You can add global styles to this file, and also import other style files */
 
+
+
+
 body {
     background-color: black;
     color: white;
 }
 
+.Graph{
+  margin-bottom: 20px;
+  margin-left: 50px;
+  margin-right: 50px;
+}
 
 .tableContainer {
-    background-color: blue;
-    display: flex;
-    flex-direction: column;
-    align-content: center;
+  height: 100%;
+  width: 100%;
+  background-color: blue;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+
 }
 
 .tableContainer table {
