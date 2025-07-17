@@ -34,6 +34,17 @@ export type ChartOptions = {
     }
     <h1>Stonk: {{stonkzService.getStonkzNameById(selectedStonk())}}</h1>
    </div>
+   <div>
+   <label for="TimeSpan"> Choose Timespan: </label>
+   <select (change)="updateSelectedTimespan($event)">
+    <option value="all"> All Data</option>
+    <option value="7days">Last 7 Days</option>
+    <option value="14days">Last 14 Days</option>
+    <option value="1month">Last Month</option>
+    <option value="6months">Last 6 Months</option>
+    <option value="1year">Last Year</option>
+   </select>
+   </div>
 
    <div>
    
@@ -107,6 +118,8 @@ export class HistoricalDataViewComponent implements OnInit {
   filteredStonkData: StonkzData[] = [];
   stonkz: Stonk[] = [];
 
+  timespan: number = -1;
+
   stonkzService = inject(StonkzService);
   userData = inject(UserDataService);
   dateComparer = inject(DateComparerService);
@@ -129,8 +142,9 @@ export class HistoricalDataViewComponent implements OnInit {
     this.chartOptions = {
       series: [
         {
-          name: "My-series",
-          data: this.getChartData()
+          name: "Price",
+          data: this.getChartData(),
+          color: '#00ffcd'
         }
       ],
       chart: {
@@ -149,15 +163,43 @@ export class HistoricalDataViewComponent implements OnInit {
     };
   }
 
+  updateSelectedTimespan(event: Event) {
+
+    let input: string = String((event.target as HTMLInputElement).value);
+    switch (input) {
+      case "7days":
+        this.timespan = 7;
+        break;
+      case "14days":
+        this.timespan = 14;
+        break;
+      case "1month":
+        this.timespan = 30;
+        break;
+      case "6months":
+        this.timespan = 180;
+        break;
+      case "1year":
+        this.timespan = 365;
+        break;
+      case "all":
+      default:
+        this.timespan = -1;
+        break;
+
+    }
+    this.updateChartData();
+  }
 
   getChartData(): number[] {
     //console.log("Chart Price: " + this.stonkData.map(stonk => stonk.price).slice(0, 12));
-    return this.filteredStonkData.map(stonk => stonk.price).reverse()/*.slice(0, 12)*/;
+    let slicePoint = this.timespan < this.filteredStonkData.length ? this.timespan : this.filteredStonkData.length;
+    return this.filteredStonkData.map(stonk => stonk.price).slice(0, slicePoint).reverse();
   }
 
   getChartXAxis(): string[] {
-    //console.log("Chart Dates: " + this.stonkData.map(stonk => stonk.date).slice(0, 12));
-    return this.filteredStonkData.map(stonk => stonk.date.split("T")[0]).reverse()/*.slice(0, 12)*/;
+    let slicePoint = this.timespan < this.filteredStonkData.length ? this.timespan : this.filteredStonkData.length;
+    return this.filteredStonkData.map(stonk => stonk.date.split("T")[0]).slice(0, slicePoint).reverse();
   }
 
   setPageScroll(state: boolean) {

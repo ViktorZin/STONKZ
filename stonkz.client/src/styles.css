@@ -84,5 +84,14 @@ body {
     justify-content: space-evenly;
 }
 
+.apexcharts-tooltip {
+  background: #323232 !important;
+  color: #00ffcd;
+}
+
+.apexcharts-tooltip-title {
+  background-color: #323232 !important;
+  color: #00ffcd;
+}
 
 
