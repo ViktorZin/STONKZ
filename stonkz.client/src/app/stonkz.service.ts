@@ -29,7 +29,7 @@ export class StonkzService {
     })
   }
 
-  public checkValue(val: number): string {
+  public checkValue(val: number, addClasses: string | null = null): string {
     let customClass: string = "";
     if (val < 0) {
       customClass += 'red';
@@ -37,7 +37,11 @@ export class StonkzService {
     else {
       customClass += 'green';
     }
-    customClass += " textRight";
+
+    if (addClasses !== null) {
+      customClass += addClasses;
+    }
+
     return customClass;
   }
 

@@ -44,7 +44,7 @@ import { ActivatedRoute } from '@angular/router';
       <tr>
         <td>{{stonkd.date | date:'dd.MM.YYYY'}}</td>
         <td class="textPrice">{{stonkd.price}} €</td>
-        <td [class]="stonkzService.checkValue(stonkd.changePercentage)">{{stonkd.changePercentage}} %</td>
+        <td [class]="stonkzService.checkValue(stonkd.changePercentage, ' textRight')">{{stonkd.changePercentage}} %</td>
         <td class="gray">{{stonkd.open}} €</td>
         <td class="gray">{{stonkd.high}} €</td>
         <td class="gray">{{stonkd.low}} €</td>

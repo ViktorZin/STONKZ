@@ -18,13 +18,6 @@ namespace STONKZ.Server.Data
 
         }
 
-        /*protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<UserData>()
-                .HasMany(s => s.StonkzWallet)
-                .WithOne(sid => sid.UserData)
-                .HasForeignKey(sid => sid.StonkId);
-        }*/
 
     }
 }

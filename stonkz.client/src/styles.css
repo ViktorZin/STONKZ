@@ -67,7 +67,11 @@ body {
   color: yellow;
 }
 
-
+.filters {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
 
 
 

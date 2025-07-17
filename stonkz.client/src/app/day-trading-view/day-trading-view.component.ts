@@ -12,6 +12,13 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [RouterLink],
   template: `
+
+    <div class="filters">
+    <button (click)="toggleTradablesFilter()">Only Tradeables</button>
+    <button (click)="toggleChangePercentageFilter()">Sort by Change %</button>
+    </div>
+
+
     @if(checkDay()) {
       <div class="tableContainer">
        <table>
@@ -36,7 +43,7 @@ import { RouterLink } from '@angular/router';
         <td class="gray">{{stonkd.open}} €</td>
         <td class="gray">{{stonkd.high}} €</td>
         <td class="gray">{{stonkd.low}} €</td>
-        <td [class]="stonkzService.checkValue(stonkd.changePercentage)">{{stonkd.changePercentage}} %</td>
+        <td [class]="stonkzService.checkValue(stonkd.changePercentage, ' textRight')">{{stonkd.changePercentage}} %</td>
         <td>{{stonkd.volume}} </td>
       </tr>
     }
@@ -58,6 +65,8 @@ export class DayTradingViewComponent implements OnInit {
   stonkzService = inject(StonkzService);
   userData = inject(UserDataService);
   dateComparer = inject(DateComparerService);
+  changePercentageFilterSetting: number = 0;
+  tradablesFilterSetting: boolean = false;
 
   async ngOnInit() {
     this.stonkz = await this.stonkzService.getStonkz();
@@ -66,6 +75,39 @@ export class DayTradingViewComponent implements OnInit {
     });
   }
 
+  toggleChangePercentageFilter() {
+    this.changePercentageFilterSetting++;
+    if (this.changePercentageFilterSetting > 2) {
+      this.changePercentageFilterSetting = 0;
+    }
+
+    switch (this.changePercentageFilterSetting) {
+      case 0:
+        this.fetchGameDayStonkData(new Date(this.userData.gameDay()));
+        break;
+      case 1:
+        this.stonkData.sort((a, b) => a.changePercentage - b.changePercentage);
+        break;
+      case 2:
+        this.stonkData.sort((a, b) => b.changePercentage - a.changePercentage);
+        break;
+      default:
+        this.fetchGameDayStonkData(new Date(this.userData.gameDay()));
+        break;
+    }
+
+  }
+
+  toggleTradablesFilter() {
+    this.tradablesFilterSetting = !this.tradablesFilterSetting;
+
+    if (this.tradablesFilterSetting) {
+      this.stonkData = this.stonkData.filter(stonk => !this.testStonkOwnage(stonk.stonkId) || !this.testAffordability(stonk.price));
+    }
+    else {
+      this.fetchGameDayStonkData(new Date(this.userData.gameDay()));
+    }
+  }
 
 
   checkDay(): boolean {

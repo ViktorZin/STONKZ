@@ -15,7 +15,7 @@ import { OwnedStonkz } from '../Interfaces/owned-stonkz';
       Welcome, User {{userData.userDataDB.userName}}!
     </p>
     <!--<button (click)="resetUserData()">RESET DB USER DATA</button>-->
-    <p>Account Balance: {{userData.userDataDB.accountBalance}} €</p>
+    <p>Account Balance: {{userData.userDataDB.accountBalance.toFixed(2)}} €  /  invested: {{getCalculatedInvestedMoney()}} €</p>
     <p>current GameDay: {{userData.gameDay() | date:'EEEE dd.MM.YYYY'}}</p>
     <p>Daily Buy Fee: {{userData.dailyBuyFee}} ||  Daily Sell Fee: {{userData.dailySellFee}}</p>
     <button (click)="progressToNextDay()"> Progress to Next Day </button>
@@ -31,6 +31,8 @@ import { OwnedStonkz } from '../Interfaces/owned-stonkz';
                 <th>Stonk</th>
                 <th>Price</th>
                 <th>Buy Date</th>
+                <th>curr Price</th>
+                <th>Difference</th>
               </tr>
             </thead>
             <tbody>
@@ -40,10 +42,13 @@ import { OwnedStonkz } from '../Interfaces/owned-stonkz';
           <!--<p>{{stonkzService.getStonkzNameById(userData.stonkzWallet[entry + 1][0].stonkId)}}</p>-->
 
               @for(boughtStonk of getOwnedStonkArray(searchEntry); track $index) {
+                @let data = getStonkPriceDifference(boughtStonk.pricePerStonk, getCurrentPriceOfStonk(boughtStonk.stonkId));  
                 <tr>
                   <td class="textRight">{{stonkzService.getStonkzNameById(boughtStonk.stonkId)}}</td>
                   <td class="textRight">{{boughtStonk.pricePerStonk}} €</td>
                   <td>{{boughtStonk.boughtDate | date:'dd.MM.YYYY'}}</td>
+                  <td>{{getCurrentPriceOfStonk(boughtStonk.stonkId)}} €</td>
+                  <td [class]="stonkzService.checkValue(data)">{{data.toFixed(2)}} €</td>
                 </tr>
               }
 
@@ -90,6 +95,26 @@ export class UserViewComponent  {
       this.userData.saveUserDataToDB();
       this.userData.saveOwnedStonkDataToDB();
     })
+  }
+
+  getCurrentPriceOfStonk(id: number): number {
+    let price: number = 0;
+    var data = this.stonkzService.getStonkDataWithDate(id, new Date(this.userData.gameDay()));
+    if(data != null) {
+      price = data.price;
+    }
+    return price;
+  }
+
+  getStonkPriceDifference(boughtPrice: number, currPrice: number) {
+    return boughtPrice - currPrice;
+  }
+
+  getCalculatedInvestedMoney(): number {
+    let startDate: Date = new Date('2021-01-03');
+    let currDate: Date = new Date(this.userData.gameDay());
+    let months: number = ((currDate.getFullYear() - startDate.getFullYear()) * 12) + (currDate.getMonth() - startDate.getMonth());
+    return 100 + (100 * months);
   }
 
   addUserData() {
