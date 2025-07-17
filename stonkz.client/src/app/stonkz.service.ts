@@ -29,6 +29,18 @@ export class StonkzService {
     })
   }
 
+  public checkValue(val: number): string {
+    let customClass: string = "";
+    if (val < 0) {
+      customClass += 'red';
+    }
+    else {
+      customClass += 'green';
+    }
+    customClass += " textRight";
+    return customClass;
+  }
+
   public debugLogArrayLength() {
     console.log("Stonkz Array Length: " + this.stonkz.length);
     console.log("StonkData Array Length: " + this.stonkData.length);

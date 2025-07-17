@@ -13,10 +13,8 @@ import { ActivatedRoute } from '@angular/router';
   imports: [CommonModule],
   standalone: true,
   template: `
-    <p>
-      historical-data-view works!
-    </p>
-
+  <hr>
+  <div>
     <label for="Stonkz">Choose a Stonk: </label>
     @if(stonkz.length > 0) {
       <select (change)="updateSelectedStonk($event)">
@@ -25,36 +23,38 @@ import { ActivatedRoute } from '@angular/router';
       }
       </select>
     }
-
-    <hr>
-
+    <h1>Stonk: {{stonkzService.getStonkzNameById(selectedStonk())}}</h1>
+   </div>
+<div class="tableContainer">
   <table>
     <thead>
       <tr>
         <th>Date</th>
         <th>Price</th>
+        <th>Change %</th>
         <th>Open</th>
         <th>High</th>
         <th>Low</th>
         <th>Volume</th>
-        <th>ChangePercentage</th>
+
       </tr>
     </thead>  
     <tbody>
     @for(stonkd of filteredStonkData; track stonkd.date) {
       <tr>
         <td>{{stonkd.date | date:'dd.MM.YYYY'}}</td>
-        <td>{{stonkd.price}} €</td>
-        <td>{{stonkd.open}} €</td>
-        <td>{{stonkd.high}} €</td>
-        <td>{{stonkd.low}} €</td>
+        <td class="textPrice">{{stonkd.price}} €</td>
+        <td [class]="stonkzService.checkValue(stonkd.changePercentage)">{{stonkd.changePercentage}} %</td>
+        <td class="gray">{{stonkd.open}} €</td>
+        <td class="gray">{{stonkd.high}} €</td>
+        <td class="gray">{{stonkd.low}} €</td>
         <td>{{stonkd.volume}} </td>
-        <td>{{stonkd.changePercentage}} %</td>
-        <td>{{stonkd.stonkId}}</td>
+        <!--<td>{{stonkd.stonkId}}</td>-->
       </tr>
     }
     </tbody>
   </table>
+  </div>
   `,
   styles: ``
 })

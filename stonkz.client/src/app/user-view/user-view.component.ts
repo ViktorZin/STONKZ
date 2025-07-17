@@ -20,9 +20,11 @@ import { OwnedStonkz } from '../Interfaces/owned-stonkz';
     <p>Daily Buy Fee: {{userData.dailyBuyFee}} ||  Daily Sell Fee: {{userData.dailySellFee}}</p>
     <button (click)="progressToNextDay()"> Progress to Next Day </button>
 
+    <div>
     <details>
-      <summary><h3>Owned Stonkz</h3></summary>
-      <p>STONK ID ARRAY</p>
+      <summary>Owned Stonkz</summary>
+      <!--<p>STONK ID ARRAY</p>-->
+      <div class="tableContainer">
                <table>
             <thead>
               <tr>
@@ -39,8 +41,8 @@ import { OwnedStonkz } from '../Interfaces/owned-stonkz';
 
               @for(boughtStonk of getOwnedStonkArray(searchEntry); track $index) {
                 <tr>
-                  <td>{{stonkzService.getStonkzNameById(boughtStonk.stonkId)}}</td>
-                  <td>{{boughtStonk.pricePerStonk}} €</td>
+                  <td class="textRight">{{stonkzService.getStonkzNameById(boughtStonk.stonkId)}}</td>
+                  <td class="textRight">{{boughtStonk.pricePerStonk}} €</td>
                   <td>{{boughtStonk.boughtDate | date:'dd.MM.YYYY'}}</td>
                 </tr>
               }
@@ -50,7 +52,13 @@ import { OwnedStonkz } from '../Interfaces/owned-stonkz';
       }
         </tbody>
           </table>
+          </div>
     </details>
+    </div>
+
+    <div>
+    <br> <br>
+    </div>
   }
   @else {
     <h3>Lade UserDaten...</h3>

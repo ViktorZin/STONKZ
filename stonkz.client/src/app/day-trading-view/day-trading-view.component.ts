@@ -12,10 +12,8 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [RouterLink],
   template: `
-    <p>
-      day-trading-view works!
-    </p>
     @if(checkDay()) {
+      <div class="tableContainer">
        <table>
     <thead>
       <tr>
@@ -25,7 +23,7 @@ import { RouterLink } from '@angular/router';
         <th>Open</th>
         <th>High</th>
         <th>Low</th>
-        <th>ChangePercentage</th>
+        <th>Change % </th>
         <th>Volume</th>
       </tr>
     </thead>
@@ -33,17 +31,18 @@ import { RouterLink } from '@angular/router';
     @for(stonkd of stonkData; track stonkd.stonkId) {
       <tr>
         <td><button [disabled]="testAffordability(stonkd.price)" (click)="buyStonkz(stonkd.stonkId)">BUY</button>  / <button [disabled]="testStonkOwnage(stonkd.stonkId)" (click)="sellStonkz(stonkd.stonkId, stonkd.price)">SELL</button></td>
-        <td><a [routerLink]="['historicalData', stonkd.stonkId]">{{getStonkNameById(stonkd.stonkId)}}</a></td>
-        <td>{{stonkd.price}} €</td>
-        <td>{{stonkd.open}} €</td>
-        <td>{{stonkd.high}} €</td>
-        <td>{{stonkd.low}} €</td>
-        <td>{{stonkd.changePercentage}} %</td>
+        <td class="textRight"><a [routerLink]="['historicalData', stonkd.stonkId]">{{getStonkNameById(stonkd.stonkId)}}</a></td>
+        <td class="textPrice">{{stonkd.price}} €</td>
+        <td class="gray">{{stonkd.open}} €</td>
+        <td class="gray">{{stonkd.high}} €</td>
+        <td class="gray">{{stonkd.low}} €</td>
+        <td [class]="stonkzService.checkValue(stonkd.changePercentage)">{{stonkd.changePercentage}} %</td>
         <td>{{stonkd.volume}} </td>
       </tr>
     }
     </tbody>
   </table>
+  </div>
     }
     @else {
       <h1>THE STOCK MARKET IS CLOSED ON WEEKENDS!</h1>
@@ -66,6 +65,8 @@ export class DayTradingViewComponent implements OnInit {
       this.fetchGameDayStonkData(new Date(this.userData.gameDay()));
     });
   }
+
+
 
   checkDay(): boolean {
     return this.dateComparer.isWeekDay(new Date(this.userData.gameDay()));
