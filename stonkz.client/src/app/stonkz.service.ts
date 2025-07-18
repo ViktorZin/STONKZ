@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { StonkzData } from './Interfaces/stonkz-data'
 import { Stonk } from './Interfaces/stonk';
 import { DateComparerService } from './date-comparer.service';
+import { ReplaySubject } from 'rxjs';
 
 
 @Injectable({
@@ -12,13 +13,15 @@ export class StonkzService {
 
   //stonkData: StonkzData[] = [];
   //stonkDataDict: StonkDataDict = {0, []}
-  public stonkDataDictReady = new EventEmitter<void>();
+  //public stonkDataDictReady = new EventEmitter<void>();
+  public stonkDataDictReady = new ReplaySubject<void>(1);
   stonkDataDict: Record<number, StonkzData[]> = {};
   stonkData: StonkzData[] = [];
   stonkDataPromise: Promise<StonkzData[]> | null = null;
   stonkz: Stonk[] = [];
   loadingPromise: Promise<Stonk[]> | null = null;
   dateComparer = inject(DateComparerService);
+
 
   constructor(private http: HttpClient)
   {
@@ -27,7 +30,9 @@ export class StonkzService {
       console.log("loadingStonkData finished. calling dict generation");
       this.generateStonkDataDictionary();
     })
+    console.log("StonkzService constructed.");
   }
+
 
   public checkValue(val: number, addClasses: string | null = null): string {
     let customClass: string = "";
@@ -84,7 +89,7 @@ export class StonkzService {
       }
     }
     console.log("done with dict generation...");
-    this.stonkDataDictReady.emit();
+    this.stonkDataDictReady.next();
   }
 
 

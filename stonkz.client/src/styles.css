@@ -79,9 +79,10 @@ body {
 }
 
 .filters {
-    display: flex;
-    flex-direction: row;
+    display: box;
+    flex-direction: column;
     justify-content: space-evenly;
+    padding: 20px;
 }
 
 .apexcharts-tooltip {

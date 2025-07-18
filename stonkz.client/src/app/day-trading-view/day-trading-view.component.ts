@@ -6,6 +6,7 @@ import { StonkzService } from '../stonkz.service';
 import { UserDataService } from '../user-data.service';
 import { DateComparerService } from '../date-comparer.service';
 import { RouterLink } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-day-trading-view',
@@ -18,42 +19,49 @@ import { RouterLink } from '@angular/router';
     <button (click)="toggleChangePercentageFilter()">Sort by Change %</button>
     </div>
 
-
-    @if(checkDay()) {
-      <div class="tableContainer">
-       <table>
-    <thead>
-      <tr>
-        <th>Actions</th>
-        <th>Stonk</th>
-        <th>Price</th>
-        <th>Open</th>
-        <th>High</th>
-        <th>Low</th>
-        <th>Change % </th>
-        <th>Volume</th>
-      </tr>
-    </thead>
-    <tbody>
-    @for(stonkd of stonkData; track stonkd.stonkId) {
-      <tr>
-        <td><button [disabled]="testAffordability(stonkd.price)" (click)="buyStonkz(stonkd.stonkId)">BUY</button>  / <button [disabled]="testStonkOwnage(stonkd.stonkId)" (click)="sellStonkz(stonkd.stonkId, stonkd.price)">SELL</button></td>
-        <td class="textRight"><a [routerLink]="['historicalData', stonkd.stonkId]">{{getStonkNameById(stonkd.stonkId)}}</a></td>
-        <td class="textPrice">{{stonkd.price}} €</td>
-        <td class="gray">{{stonkd.open}} €</td>
-        <td class="gray">{{stonkd.high}} €</td>
-        <td class="gray">{{stonkd.low}} €</td>
-        <td [class]="stonkzService.checkValue(stonkd.changePercentage, ' textRight')">{{stonkd.changePercentage}} %</td>
-        <td>{{stonkd.volume}} </td>
-      </tr>
-    }
-    </tbody>
-  </table>
-  </div>
+    @if(stonkData.length > 0) {
+      @if(checkDay()) {
+        <div class="tableContainer">
+          <table>
+            <thead>
+              <tr>
+                <th>Actions</th>
+                <th>Stonk</th>
+                <th>Price</th>
+                <th>Open</th>
+                <th>High</th>
+                <th>Low</th>
+                <th>Change % </th>
+                <th>Volume</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for(stonkd of stonkData; track stonkd.stonkId) {
+                <tr>
+                  <td><button [disabled]="testAffordability(stonkd.price)" (click)="buyStonkz(stonkd.stonkId)">BUY</button>  / <button [disabled]="testStonkOwnage(stonkd.stonkId)" (click)="sellStonkz(stonkd.stonkId, stonkd.price)">SELL</button></td>
+                  <td class="textRight"><a [routerLink]="['historicalData', stonkd.stonkId]">{{getStonkNameById(stonkd.stonkId)}}</a></td>
+                  <td class="textPrice">{{stonkd.price}} €</td>
+                  <td class="gray">{{stonkd.open}} €</td>
+                  <td class="gray">{{stonkd.high}} €</td>
+                  <td class="gray">{{stonkd.low}} €</td>
+                  <td [class]="stonkzService.checkValue(stonkd.changePercentage, ' textRight')">{{stonkd.changePercentage}} %</td>
+                  <td>{{stonkd.volume}} </td>
+                </tr> 
+            }
+            </tbody>
+          </table>
+        </div>
+      }
+      @else {
+        <h1>THE STOCK MARKET IS CLOSED ON WEEKENDS!</h1>
+      }
     }
     @else {
-      <h1>THE STOCK MARKET IS CLOSED ON WEEKENDS!</h1>
+      <hr>
+      <h1>... LOADING STONK DATA ...</h1>
+      <hr>
     }
+    
     
   `,
   styles: ``
@@ -69,10 +77,19 @@ export class DayTradingViewComponent implements OnInit {
   tradablesFilterSetting: boolean = false;
 
   async ngOnInit() {
+
+    console.log("ONINIT DayTrading.");
+    if (this.stonkzService === null) {
+      console.log("ERROR.. STONKZSERVICE IS NULL");
+    }
+
     this.stonkz = await this.stonkzService.getStonkz();
-    this.stonkzService.stonkDataDictReady.subscribe(() => {
+    await firstValueFrom(this.stonkzService.stonkDataDictReady).then(() => {
       this.fetchGameDayStonkData(new Date(this.userData.gameDay()));
     });
+    //this.stonkzService.stonkDataDictReady.subscribe(() => {
+
+    //});
   }
 
   toggleChangePercentageFilter() {
@@ -129,7 +146,7 @@ export class DayTradingViewComponent implements OnInit {
         this.stonkData.push(data);
       }
     }
-   // console.log("DONE with GameDayStonkData. array length: " + this.stonkData.length);
+    console.log("DONE with GameDayStonkData. array length: " + this.stonkData.length);
   }
 
   getStonkNameById(id: number): string {

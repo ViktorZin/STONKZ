@@ -42,7 +42,7 @@ import { OwnedStonkz } from '../Interfaces/owned-stonkz';
           <!--<p>{{stonkzService.getStonkzNameById(userData.stonkzWallet[entry + 1][0].stonkId)}}</p>-->
 
               @for(boughtStonk of getOwnedStonkArray(searchEntry); track $index) {
-                @let data = getStonkPriceDifference(boughtStonk.pricePerStonk, getCurrentPriceOfStonk(boughtStonk.stonkId));  
+                @let data = getStonkPriceDifference(getCurrentPriceOfStonk(boughtStonk.stonkId), boughtStonk.pricePerStonk);
                 <tr>
                   <td class="textRight">{{stonkzService.getStonkzNameById(boughtStonk.stonkId)}}</td>
                   <td class="textRight">{{boughtStonk.pricePerStonk}} €</td>

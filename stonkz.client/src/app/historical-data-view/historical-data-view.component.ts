@@ -28,7 +28,11 @@ export type ChartOptions = {
     @if(stonkz.length > 0) {
       <select (change)="updateSelectedStonk($event)">
       @for(stonk of stonkz; track stonk.stonkId) {
-        <option value="{{stonk.stonkId}}">{{stonk.stonkName}}</option>
+        <!--<option [value]="{{stonk.stonkId}}">{{stonk.stonkName}}</option>-->
+        <option 
+        [value]="stonk.stonkId"
+        [selected]="stonk.stonkId === selectedStonk()"
+        >{{stonk.stonkName}}</option>
       }
       </select>
     }
@@ -124,6 +128,7 @@ export class HistoricalDataViewComponent implements OnInit {
   userData = inject(UserDataService);
   dateComparer = inject(DateComparerService);
 
+  isInitialized: boolean = false;
   
   async ngOnInit() {
     this.requestedStonkDataId = this.route.snapshot.paramMap.get('id');
@@ -131,10 +136,11 @@ export class HistoricalDataViewComponent implements OnInit {
     this.stonkz = await this.stonkzService.getStonkz();
     console.log("Stonkz should be loaded now...");
 
+    this.isInitialized = true;
     this.setHistoricalData();
     //this.debugDateCheck();
 
-    
+
 
   }
 
